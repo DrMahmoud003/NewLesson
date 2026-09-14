@@ -1,0 +1,3 @@
+<?php
+namespace Alprof\Controllers; use PDO; use Alprof\Core\Auth;
+final class AssistantController {public function __construct(private PDO $db,private Auth $auth){} public function create(array $data):void{if(!$this->auth->isManager())throw new \RuntimeException('غير مصرح');$hash=password_hash($data['password'],defined('PASSWORD_ARGON2ID')?PASSWORD_ARGON2ID:PASSWORD_DEFAULT);$q=$this->db->prepare("INSERT INTO users(name,email,password_hash,role,status,created_at) VALUES(?,?,?,'assistant','active',NOW())");$q->execute([trim($data['name']),mb_strtolower(trim($data['email'])),$hash]);$this->auth->audit((int)$this->auth->user()['id'],'assistant_created',['assistant_id'=>(int)$this->db->lastInsertId()]);}}

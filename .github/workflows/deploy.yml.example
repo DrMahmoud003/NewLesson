@@ -1,0 +1,17 @@
+name: Deploy to cPanel
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy over SSH
+        uses: easingthemes/ssh-deploy@v5.1.0
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.CPANEL_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.CPANEL_HOST }}
+          REMOTE_USER: ${{ secrets.CPANEL_USER }}
+          TARGET: ${{ secrets.CPANEL_TARGET }}
+          EXCLUDE: "/.git/,/.env,/storage/logs/,/design-reference/"

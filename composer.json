@@ -1,0 +1,42 @@
+{
+  "name": "drmahmoud003/newlesson",
+  "description": "منصة البروف التعليمية - secure modular edition",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.4",
+    "ext-pdo": "*",
+    "ext-mbstring": "*",
+    "ext-json": "*",
+    "ext-sodium": "*",
+    "vlucas/phpdotenv": "^5.6",
+    "symfony/security-csrf": "^7.3 || ^8.0",
+    "symfony/rate-limiter": "^7.3 || ^8.0",
+    "paragonie/halite": "^5.1",
+    "robthree/twofactorauth": "^3.0",
+    "monolog/monolog": "^3.9",
+    "dompdf/dompdf": "^3.1",
+    "phpoffice/phpspreadsheet": "^5.0"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1",
+    "vimeo/psalm": "^6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Alprof\\": "app/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "allow-plugins": {}
+  },
+  "scripts": {
+    "security-audit": "composer audit --locked",
+    "lint": "find app config database public resources -name '*.php' -print0 | xargs -0 -n1 php -l",
+    "analyse": "phpstan analyse --no-progress"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

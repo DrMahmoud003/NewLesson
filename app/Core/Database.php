@@ -1,0 +1,3 @@
+<?php
+namespace Alprof\Core; use PDO; use RuntimeException; use Alprof\Services\AppLogger;
+final class Database { private static ?PDO $pdo=null; public static function connection(): PDO { if(self::$pdo)return self::$pdo; $dsn='mysql:host='.envv('DB_HOST','localhost').';port='.envv('DB_PORT','3306').';dbname='.envv('DB_NAME','alprof').';charset=utf8mb4'; try{self::$pdo=new PDO($dsn,envv('DB_USER'),envv('DB_PASS'),[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);}catch(\Throwable $e){AppLogger::instance()->error('DB connection failed',['error'=>$e->getMessage()]);throw new RuntimeException('تعذر الاتصال بالخدمة مؤقتًا.');}return self::$pdo;}}

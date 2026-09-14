@@ -1,0 +1,9 @@
+parameters:
+    level: 5
+    paths:
+        - app
+        - public
+        - database
+    tmpDir: storage/cache/phpstan
+    bootstrapFiles:
+        - phpstan-bootstrap.php

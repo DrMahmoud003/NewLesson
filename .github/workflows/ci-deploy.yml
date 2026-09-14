@@ -1,0 +1,70 @@
+name: Security checks and cPanel deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_mysql, sodium
+          coverage: none
+      - name: Validate Composer
+        run: composer validate --strict
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Audit dependencies
+        run: composer audit --locked
+      - name: PHP syntax
+        run: find app config database public resources -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Static analysis
+        run: vendor/bin/phpstan analyse --no-progress
+      - name: Scan committed secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build production package
+        run: composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction
+      - uses: actions/upload-artifact@v4
+        with:
+          name: newlesson-production
+          path: .
+          include-hidden-files: true
+          retention-days: 7
+  deploy:
+    needs: security
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: newlesson-production
+          path: .
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s' "${{ secrets.CPANEL_SSH_PRIVATE_KEY }}" > ~/.ssh/newlesson
+          chmod 600 ~/.ssh/newlesson
+          printf '%s\n' "${{ secrets.CPANEL_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+      - name: Deploy safely
+        run: |
+          rsync -az --delete \
+            --exclude='.git/' --exclude='.github/' --exclude='.env' \
+            --exclude='storage/logs/' --exclude='storage/cache/' \
+            --exclude='design-reference/' \
+            -e "ssh -i ~/.ssh/newlesson -p ${{ secrets.CPANEL_PORT }}" \
+            ./ "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:${{ secrets.CPANEL_PATH }}/"
+      - name: Secure permissions and release
+        run: |
+          ssh -i ~/.ssh/newlesson -p "${{ secrets.CPANEL_PORT }}" \
+            "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}" \
+            "cd '${{ secrets.CPANEL_PATH }}' && chmod 600 .env && find app config database resources -type f -exec chmod 640 {} \; && find public -type f -exec chmod 644 {} \;"

@@ -1,0 +1,1 @@
+<?xml version="1.0"?><psalm errorLevel="4" resolveFromConfigFile="true"><projectFiles><directory name="app"/><directory name="public"/><ignoreFiles><directory name="vendor"/></ignoreFiles></projectFiles></psalm>

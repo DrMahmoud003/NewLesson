@@ -1,0 +1,1 @@
+<div class="page-head"><div><h1>إدارة المساعدين</h1><p>إنشاء حسابات وصلاحيات منفصلة</p></div><span>V. 2.6</span></div><div class="card"><h2>حساب مساعد جديد</h2><p>كلمات السر تُحفظ Hash ولا تظهر في الكود أو بعد الحفظ.</p><div class="toolbar"><button class="btn">إضافة مساعد</button><button class="btn">إدارة الصلاحيات</button></div></div>

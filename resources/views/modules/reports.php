@@ -1,0 +1,1 @@
+<div class="page-head"><div><h1>التقارير</h1><p>إنشاء PDF وExcel من الخادم</p></div><span>V. 2.6</span></div><div class="grid"><div class="card"><h2>تقرير الامتحانات</h2><button class="btn">إنشاء</button></div><div class="card"><h2>تقرير الحضور</h2><button class="btn">إنشاء</button></div><div class="card"><h2>تقرير الماليات</h2><button class="btn">إنشاء</button></div></div>
